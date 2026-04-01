@@ -1,20 +1,27 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from fastapi.responses import HTMLResponse
 import pickle 
 import numpy as np
+from typing import Literal
 
 app=FastAPI()
 class Transaction(BaseModel):
     distance_from_home: float
     ratio_to_median_purchase_price: float
-    used_pin_number: int
-    online_order: int
+    used_pin_number: Literal[0,1]
+    online_order: Literal[0,1]
 
 with open("credit_card_scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
 with open("credit_card_model.pkl", "rb") as f:
     classifier_lr = pickle.load(f)
+
+@app.get("/", response_class=HTMLResponse)
+def serve_home():
+    with open("index.html", "r") as f:
+        return f.read()
 
 @app.get("/")
 def read_root():
