@@ -7,16 +7,23 @@ from typing import Literal
 
 app=FastAPI()
 class Transaction(BaseModel):
-    distance_from_home: float
-    ratio_to_median_purchase_price: float
-    used_pin_number: Literal[0,1]
-    online_order: Literal[0,1]
+    amount: float
+    transaction_hour: float
+    device_trust_score: int
+    velocity_last_24h: int
+    cardholder_age:int
+    foreign_transaction: Literal[0,1]
+    location_mismatch: Literal[0,1]
+    merchant_category_encoded:Literal[1,2,3,4]
 
 with open("credit_card_scaler.pkl", "rb") as f:
     scaler = pickle.load(f)
 
 with open("credit_card_model.pkl", "rb") as f:
     classifier_lr = pickle.load(f)
+
+with open('rf_model.pkl', 'rb') as f:
+    classifier_rf = pickle.load(f)
 
 @app.get("/", response_class=HTMLResponse)
 def serve_home():
@@ -29,10 +36,10 @@ def read_root():
 
 @app.post("/predict/")
 def predict(transaction: Transaction):
-    transaction_array = np.array([transaction.distance_from_home, transaction.ratio_to_median_purchase_price, transaction.used_pin_number, transaction.online_order]).reshape(1, -1)
+    transaction_array = np.array([transaction.amount, transaction.transaction_hour, transaction.device_trust_score, transaction.velocity_last_24h, transaction.cardholder_age, transaction.foreign_transaction, transaction.location_mismatch, transaction.merchant_category_encoded]).reshape(1,-1)
     transaction_scaled = scaler.transform(transaction_array)
-    prediction = classifier_lr.predict(transaction_scaled)
-    probability = classifier_lr.predict_proba(transaction_scaled)[0][1]
+    prediction = classifier_rf.predict(transaction_scaled)
+    probability = classifier_rf.predict_proba(transaction_scaled)[0][1]
     return {"prediction": "Fraud" if prediction[0] == 1 else "Not Fraud", "probability": f'{probability*100:.2f}%'}
 
 
