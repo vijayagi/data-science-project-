@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-numpy
-pandas
-scikit-learn
-matplotlib
-seaborn
-tensorflow
-tensorflow_datasets

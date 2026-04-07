@@ -1,0 +1,7 @@
+numpy
+matplotlib
+seaborn
+tensorflow
+tensorflow_datasets
+streamlit
+streamlit-drawable-canvas
