@@ -1,0 +1,27 @@
+[28x28x1 Image] # we take one image
+        ↓
+Conv2D (32 filters)
+        ↓
+[26x26x32]  # we get output as 32 feature maps of 26x26
+        ↓
+MaxPooling # reduces spatial dimensions by taking max of a 2x2 submatrix
+        ↓
+[13x13x32]
+        ↓
+Conv2D (64 filters) # we increase filters for better feature extraction
+        ↓
+[11x11x64]
+        ↓
+MaxPooling
+        ↓
+[5x5x64]
+        ↓
+Flatten
+        ↓
+[1600]
+        ↓
+Dense (128)
+        ↓
+Dense (10)
+        ↓
+Output (digit)

@@ -9,7 +9,8 @@ with open('model2.pkl', 'rb') as f:
 
 st.title("Digit Recognizer")
 
-st.write("draw a digit in the box below")
+st.write("draw a digit in the box below or")
+img=st.file_uploader("upload an image",type=["png", "jpg", "jpeg"])
 
 canvas = st_canvas(
     fill_color='black',
@@ -29,7 +30,13 @@ def preprocessing(img):
     img_array=img_array.reshape(1,784)
     return img_array
 if st.button('predict'):
-    if canvas.image_data is not None:
+    if img is not None:
+        img = Image.open(img)
+        img=preprocessing(img)
+        prediction=model.predict(img)
+        st.write(f"Predicted digit: {np.argmax(prediction[0])}")
+        st.write(f"confidence:{np.max(prediction)}")
+    elif canvas.image_data is not None:
         img = Image.fromarray((canvas.image_data).astype('uint8'))
         img=preprocessing(img)
         prediction=model.predict(img)
